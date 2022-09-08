@@ -1,7 +1,10 @@
+import Login from './Components/Login'
+import Register from './Components/Register'
+
 function App() {
 	return (
 		<div className='App'>
-			<header className='App-header'>Hello World</header>
+			<Register />
 		</div>
 	)
 }
