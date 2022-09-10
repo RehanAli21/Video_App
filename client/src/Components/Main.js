@@ -7,7 +7,14 @@ const Main = () => {
 
 	const { user } = useContext(UserContext)
 
-	return <button onClick={() => navigate('/')}>Logout</button>
+	return (
+		<div>
+			<button onClick={() => navigate('/')}>Logout</button>
+
+			<button>Create</button>
+			<button>Join</button>
+		</div>
+	)
 }
 
 export default Main
