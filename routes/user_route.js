@@ -35,9 +35,7 @@ router.get('/login/:email/:password', async (req, res) => {
 
 		if (user == null) return res.json({ msg: 'user not found' })
 
-		res.json({ msg: 'user found' })
-
-		// res.send(user)
+		res.json({ name: user.name, email: user.email, msg: 'user found' })
 	} catch (err) {
 		res.status(500).send(err)
 	}

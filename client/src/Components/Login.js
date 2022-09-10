@@ -1,7 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
+import UserContext from '../UserContext'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
+	let navigate = useNavigate()
+
+	const { setUser } = useContext(UserContext)
+
 	const [email, setEmail] = useState('')
 	const [pass, setPass] = useState('')
 
@@ -9,7 +15,14 @@ const Login = () => {
 		if (email && email !== '' && pass && pass !== '') {
 			try {
 				const res = await axios.get(`http://localhost:5000/api/user/login/${email}/${pass}`)
-				console.log(res.data.msg)
+
+				if (res.data.msg === 'user found') {
+					setUser({
+						name: res.data.name,
+						email: res.data.email,
+					})
+					navigate(`/main`)
+				}
 			} catch (err) {
 				alert(err)
 			}
