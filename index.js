@@ -2,37 +2,15 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
-const User = require('./models/UserSchema')
-
+const router = require('./router')
 require('dotenv').config()
 
 app.use(express.json())
 app.use(cors())
+app.use(router)
 
 app.get('/', (req, res) => {
 	res.status(200).send('Yes! it is running')
-})
-
-// for registering user
-app.post('/api/register', async (req, res) => {
-	const name = req.body.name
-	const email = req.body.email
-	const pass = req.body.password
-
-	if (name && email && pass) {
-		const user = new User({
-			name: name,
-			email: email,
-			password: pass,
-		})
-
-		try {
-			await user.save()
-			res.send(user)
-		} catch (error) {
-			res.status(500).send(error)
-		}
-	}
 })
 
 const dbUsername = process.env.dbusername

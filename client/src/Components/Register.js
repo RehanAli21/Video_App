@@ -11,7 +11,7 @@ const Register = () => {
 		if (name && email && pass && confirmPass) {
 			if (pass === confirmPass) {
 				try {
-					const res = await axios.post('http://localhost:5000/api/register', {
+					const res = await axios.post('http://localhost:5000/api/user/register', {
 						name: name,
 						email: email,
 						password: pass,
