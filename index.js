@@ -3,7 +3,6 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 const User = require('./models/UserSchema')
-const { v4: uuidv4 } = require('uuid')
 
 require('dotenv').config()
 
@@ -19,15 +18,12 @@ app.post('/api/register', async (req, res) => {
 	const name = req.body.name
 	const email = req.body.email
 	const pass = req.body.password
-	const code = uuidv4().split('-')[0]
 
 	if (name && email && pass) {
 		const user = new User({
 			name: name,
 			email: email,
 			password: pass,
-			verificationCode: code,
-			verified: false,
 		})
 
 		try {
