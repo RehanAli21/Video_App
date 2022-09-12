@@ -1,9 +1,8 @@
 const express = require('express')
 const http = require('http')
 const cors = require('cors')
-const mongoose = require('mongoose')
 const socketio = require('socket.io')
-const router = require('./router')
+const { GetRooms, AddRooms, DeleteRooms, IsRoomPresent } = require('./RoomHelper')
 require('dotenv').config()
 
 const app = express()
@@ -18,7 +17,6 @@ const io = socketio(server, {
 // middlewares
 app.use(express.json())
 app.use(cors())
-app.use(router)
 
 ////////////////////////////////////////
 // Route for checking if server is running or not
@@ -27,30 +25,28 @@ app.get('/', (req, res) => {
 	res.status(200).send('Yes! it is running')
 })
 
-////////////////////////////////////////
-// Database connectivity
-////////////////////////////////////////
-const dbUsername = process.env.dbusername
-const dbUserpass = process.env.dbuserpass
-const cluster = process.env.cluster
-const uri = `mongodb+srv://${dbUsername}:${dbUserpass}@${cluster}.aq7mjld.mongodb.net/?retryWrites=true&w=majority`
+app.get('/api/rooms/:room', (req, res) => {
+	const reqRoom = req.params.room
 
-mongoose.connect(uri, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-})
-
-const db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error: '))
-db.once('open', function () {
-	console.log('Connected successfully')
+	res.status(200).json({ msg: IsRoomPresent(reqRoom) ? 'Room' : 'noRoom' })
 })
 
 // run when client connects
 io.on('connection', socket => {
 	console.log('socket.io connection')
 
-	socket.emit('message', 'Welcome to app')
+	socket.on('create', ({ room }) => {
+		AddRooms(room)
+		socket.join(room)
+	})
+
+	socket.on('join', ({ room }) => {
+		socket.join(room)
+	})
+
+	socket.on('disconnect', () => {
+		io.emit('message', 'A user left chat')
+	})
 })
 
 ////////////////////////////////////////
