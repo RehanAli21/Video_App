@@ -35,15 +35,23 @@ app.get('/api/rooms/:room', (req, res) => {
 io.on('connection', socket => {
 	console.log('socket.io connection')
 
+	// for creating room
 	socket.on('create', ({ room }) => {
 		AddRooms(room)
 		socket.join(room)
 	})
 
+	// for joining room
 	socket.on('join', ({ room }) => {
 		socket.join(room)
 	})
 
+	// for sending webcam video to all other users to one user
+	socket.on('my_webcam_video', ({ room, name, stream }) => {
+		socket.broadcast.to(room).emit('others_webcam_video', { name: name, stream: stream })
+	})
+
+	// when user disconnects
 	socket.on('disconnect', () => {
 		io.emit('message', 'A user left chat')
 	})

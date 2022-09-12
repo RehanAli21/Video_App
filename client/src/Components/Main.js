@@ -15,8 +15,6 @@ const Main = () => {
 			try {
 				let res = await axios.get(`http://localhost:5000/api/rooms/${createRoom}`)
 
-				console.log(res)
-
 				if (res.data.msg === 'noRoom') {
 					setRoom(createRoom)
 					navigate('/room/create')
