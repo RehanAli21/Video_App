@@ -3,13 +3,11 @@ import Main from './Components/Main'
 
 function App() {
 	return (
-		<UserProvider>
-			<BrowserRouter>
-				<Routes>
-					<Route path='/' element={<Main />} />
-				</Routes>
-			</BrowserRouter>
-		</UserProvider>
+		<BrowserRouter>
+			<Routes>
+				<Route path='/' element={<Main />} />
+			</Routes>
+		</BrowserRouter>
 	)
 }
 
