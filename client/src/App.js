@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { UserProvider } from './UserContext'
 import Main from './Components/Main'
-import Room from './Components/Room'
 
 function App() {
 	return (
@@ -9,7 +7,6 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path='/' element={<Main />} />
-					<Route path='/room/:option' element={<Room />} />
 				</Routes>
 			</BrowserRouter>
 		</UserProvider>

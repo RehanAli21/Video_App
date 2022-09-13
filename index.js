@@ -2,7 +2,6 @@ const express = require('express')
 const http = require('http')
 const cors = require('cors')
 const socketio = require('socket.io')
-const { GetRooms, AddRooms, DeleteRooms, IsRoomPresent } = require('./RoomHelper')
 require('dotenv').config()
 
 const app = express()
@@ -32,34 +31,11 @@ app.get('/api/rooms/:room', (req, res) => {
 })
 
 // run when client connects
-io.on('connection', socket => {
-	console.log('socket.io connection')
-
-	// for creating room
-	socket.on('create', ({ room }) => {
-		AddRooms(room)
-		socket.join(room)
-	})
-
-	// for joining room
-	socket.on('join', ({ room }) => {
-		socket.join(room)
-	})
-
-	// for sending webcam video to all other users to one user
-	socket.on('my_webcam_video', ({ room, name, stream }) => {
-		socket.broadcast.to(room).emit('others_webcam_video', { name: name, stream: stream })
-	})
-
-	// when user disconnects
-	socket.on('disconnect', () => {
-		io.emit('message', 'A user left chat')
-	})
-})
+io.on('connection', socket => {})
 
 ////////////////////////////////////////
 // Server listening
 ////////////////////////////////////////
-const PORT = 5000 || process.env.PORT
+const PORT = process.env.PORT || 5000
 
 server.listen(PORT, () => console.log('Yes it is running'))
