@@ -31,7 +31,9 @@ app.get('/api/rooms/:room', (req, res) => {
 })
 
 // run when client connects
-io.on('connection', socket => {})
+io.on('connection', socket => {
+	socket.emit('me', socket.id)
+})
 
 ////////////////////////////////////////
 // Server listening
