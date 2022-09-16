@@ -2,6 +2,7 @@ const express = require('express')
 const http = require('http')
 const cors = require('cors')
 const socketio = require('socket.io')
+const { addIdInRoom, getAllIdsInRoom } = require('./RoomData')
 require('dotenv').config()
 
 const app = express()
@@ -24,15 +25,41 @@ app.get('/', (req, res) => {
 	res.status(200).send('Yes! it is running')
 })
 
-app.get('/api/rooms/:room', (req, res) => {
-	const reqRoom = req.params.room
+app.get('/api/createRoom/:room', (req, res) => {
+	let r = getAllIdsInRoom(req.params.room)
 
-	res.status(200).json({ msg: IsRoomPresent(reqRoom) ? 'Room' : 'noRoom' })
+	res.status(200).json({ msg: r === null ? 'roomAvailable' : 'roomExist' })
+})
+
+app.get('/api/joinRoom/:room', (req, res) => {
+	let r = getAllIdsInRoom(req.params.room)
+
+	res.status(200).json({ msg: r === null ? 'roomDoesNotExist' : 'roomAvailable' })
 })
 
 // run when client connects
 io.on('connection', socket => {
+	socket.on('createRoom', ({ room, id, name }) => {
+		addIdInRoom(room, { id, name })
+
+		socket.join(room)
+	})
+
+	socket.on('joinRoom', async ({ room, id, name }) => {
+		addIdInRoom(room, { id, name })
+
+		socket.join(room)
+
+		let r = await getAllIdsInRoom(room)
+
+		console.log(socket.emit('user join', r))
+	})
+
 	socket.emit('me', socket.id)
+
+	socket.on('disconnect', () => {
+		socket.leave(socket.id)
+	})
 })
 
 ////////////////////////////////////////

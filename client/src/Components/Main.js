@@ -1,20 +1,44 @@
 import React, { useContext, useState } from 'react'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import SocketContext from '../SocketContext'
 
 const Main = () => {
-	let navigate = useNavigate()
+	const navigate = useNavigate()
+	const ENDPOINT = 'http://localhost:5000'
+
+	const { myId, createRoomFunc, joinRoomFunc } = useContext(SocketContext)
 
 	const [createName, setCreateName] = useState('')
-
+	const [createRoom, setCreateRoom] = useState('')
 	const [joinRoom, setJoinRoom] = useState('')
 	const [joinName, setJoinName] = useState('')
 
 	const roomChecker = option => {
-		if (option === 'create' && createName !== '') {
-			navigate('/room')
+		if (option === 'create' && createName !== '' && createRoom !== '') {
+			axios
+				.get(`${ENDPOINT}/api/createRoom/${createRoom}`)
+				.then(res => {
+					if (res.data.msg === 'roomAvailable') {
+						createRoomFunc(createRoom, myId, createName)
+						navigate('/room/create')
+					} else if (res.data.msg === 'roomExist') {
+						alert('Room Already Exists')
+					}
+				})
+				.catch(e => console.log(e))
 		} else if (option === 'join' && joinName !== '' && joinRoom !== '') {
-			navigate('/room')
+			axios
+				.get(`${ENDPOINT}/api/joinRoom/${joinRoom}`)
+				.then(res => {
+					if (res.data.msg === 'roomAvailable') {
+						joinRoomFunc(joinRoom, myId, joinName)
+						navigate('/room/join')
+					} else if (res.data.msg === 'roomDoesNotExist') {
+						alert('Room Does Not Exists')
+					}
+				})
+				.catch(e => console.log(e))
 		}
 	}
 
@@ -29,6 +53,12 @@ const Main = () => {
 						onChange={e => setCreateName(e.target.value)}
 						type='text'
 						placeholder='Enter Name'
+					/>
+					<input
+						className='my-2 p-2'
+						onChange={e => setCreateRoom(e.target.value)}
+						type='text'
+						placeholder='Enter Room Name'
 					/>
 					<button className='btn btn-primary my-2' onClick={() => roomChecker('create')}>
 						Create
