@@ -14,8 +14,6 @@ export const SocketProvider = ({ children }) => {
 		socket = io('http://localhost:5000')
 		socket.on('me', id => setMyId(id))
 
-		socket.on('create', data => console.log('room created=' + data))
-
 		socket.on('user join', data => {
 			let tempid = []
 			let tempname = []
@@ -34,7 +32,11 @@ export const SocketProvider = ({ children }) => {
 
 	const joinRoomFunc = (room, id, name) => socket.emit('joinRoom', { room, id, name })
 
-	return <SocketContext.Provider value={{ myId, createRoomFunc, joinRoomFunc }}>{children}</SocketContext.Provider>
+	return (
+		<SocketContext.Provider value={{ myId, createRoomFunc, joinRoomFunc, ids, names }}>
+			{children}
+		</SocketContext.Provider>
+	)
 }
 
 export default SocketContext

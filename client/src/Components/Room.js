@@ -1,6 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
+import { useParams } from 'react-router-dom'
+import SocketContext from '../SocketContext'
 
 const Room = () => {
+	const params = useParams()
+	const { myId, ids, names } = useContext(SocketContext)
+
+	console.log(ids, names)
+
 	const [video, setVideo] = useState(false)
 	const [audio, setAudio] = useState(false)
 	const [share, setShare] = useState(false)
@@ -10,6 +17,20 @@ const Room = () => {
 	const AudioFunc = () => setAudio(!audio)
 
 	const ShareFunc = () => setShare(!share)
+
+	const showMembers = () => {
+		let members = []
+		for (let i = 0; i < ids.length; i++) {
+			members.push(
+				<div className='w-100 text-white text-center m-0 p-3 border-2 border-bottom border-danger' key={i}>
+					<span className='mx-1'>{names[i]}</span>
+					<span className='mx-1'>video</span>
+					<span className='mx-1'>audio</span>
+				</div>
+			)
+		}
+		return members
+	}
 
 	return (
 		<div className='row m-0'>
@@ -41,9 +62,9 @@ const Room = () => {
 			</div>
 			<div className='col-3 vh-100 border-start border-3 p-0'>
 				<div className='bg-secondary'>
-					<h5 className='text-center text-white py-3'>Room ID: 23kk23nNKN23mas</h5>
+					<h5 className='text-center text-white py-3'>Room: {params.room}</h5>
 				</div>
-				<div></div>
+				<div>{showMembers()}</div>
 			</div>
 		</div>
 	)

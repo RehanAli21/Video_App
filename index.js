@@ -52,7 +52,7 @@ io.on('connection', socket => {
 
 		let r = await getAllIdsInRoom(room)
 
-		console.log(socket.emit('user join', r))
+		io.to(room).emit('user join', r)
 	})
 
 	socket.emit('me', socket.id)

@@ -21,7 +21,7 @@ const Main = () => {
 				.then(res => {
 					if (res.data.msg === 'roomAvailable') {
 						createRoomFunc(createRoom, myId, createName)
-						navigate('/room/create')
+						navigate(`/room/create/${createRoom}/${createName}`)
 					} else if (res.data.msg === 'roomExist') {
 						alert('Room Already Exists')
 					}
@@ -33,7 +33,7 @@ const Main = () => {
 				.then(res => {
 					if (res.data.msg === 'roomAvailable') {
 						joinRoomFunc(joinRoom, myId, joinName)
-						navigate('/room/join')
+						navigate(`/room/join/${joinRoom}/${joinName}`)
 					} else if (res.data.msg === 'roomDoesNotExist') {
 						alert('Room Does Not Exists')
 					}
