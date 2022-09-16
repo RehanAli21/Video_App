@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react'
+import React, { useState, useContext, useRef, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import SocketContext from '../SocketContext'
 
@@ -7,73 +7,13 @@ const Room = () => {
 	const { ids, names } = useContext(SocketContext)
 
 	const [video, setVideo] = useState(false)
-	const [audio, setAudio] = useState(false)
+	const [audio, setAudio] = useState(true)
 	const [share, setShare] = useState(false)
+	const [btn, setBtn] = useState('none')
 
 	const [stream, setStream] = useState()
 
 	const myVideo = useRef()
-
-	const VideoFunc = () => {
-		if (!share && navigator.mediaDevices.getUserMedia) {
-			navigator.mediaDevices
-				.getUserMedia({ video: true, audio: audio })
-				.then(stream => {
-					setStream(stream)
-					myVideo.current.srcObject = stream
-					setVideo(true)
-				})
-				.catch(error => console.log('Something went wrong!'))
-		}
-	}
-
-	const StopVideoFunc = () => {
-		if (myVideo.current.srcObject) {
-			let tracks = stream.getTracks()
-
-			for (const track in tracks) {
-				tracks[track].stop()
-			}
-
-			myVideo.src = ''
-			myVideo.srcObject = null
-			setVideo(false)
-		}
-	}
-
-	const AudioFunc = () => {
-		if (video) {
-		} else if (share) {
-		}
-		setAudio(!audio)
-	}
-
-	const ShareFunc = () => {
-		if (!video && navigator.mediaDevices.getDisplayMedia) {
-			navigator.mediaDevices
-				.getDisplayMedia({ video: true, audio: audio })
-				.then(stream => {
-					setStream(stream)
-					myVideo.current.srcObject = stream
-					setShare(true)
-				})
-				.catch(error => console.log('Something went wrong!'))
-		}
-	}
-
-	const StopShareFunc = () => {
-		if (myVideo.current.srcObject) {
-			let tracks = stream.getTracks()
-
-			for (const track in tracks) {
-				tracks[track].stop()
-			}
-
-			myVideo.src = ''
-			myVideo.srcObject = null
-			setShare(false)
-		}
-	}
 
 	const showMembers = () => {
 		let members = []
@@ -88,6 +28,54 @@ const Room = () => {
 		}
 		return members
 	}
+
+	const StopStream = () => {
+		if (myVideo.current.srcObject) {
+			let tracks = stream.getTracks()
+
+			for (const track in tracks) {
+				tracks[track].stop()
+			}
+
+			myVideo.src = ''
+			myVideo.srcObject = null
+		}
+	}
+
+	useEffect(() => {
+		if (!video && !share) {
+			StopStream()
+		}
+		if (btn === 'video' && video) {
+			if (share) setShare(false)
+
+			StopStream()
+
+			if (navigator.mediaDevices.getUserMedia) {
+				navigator.mediaDevices
+					.getUserMedia({ video: true, audio: audio })
+					.then(stream => {
+						setStream(stream)
+						myVideo.current.srcObject = stream
+					})
+					.catch(error => console.log('Something went wrong!'))
+			}
+		} else if (btn === 'share' && share) {
+			if (video) setVideo(false)
+
+			StopStream()
+
+			if (navigator.mediaDevices.getDisplayMedia) {
+				navigator.mediaDevices
+					.getDisplayMedia({ video: true, audio: audio })
+					.then(stream => {
+						setStream(stream)
+						myVideo.current.srcObject = stream
+					})
+					.catch(error => console.log('Something went wrong!'))
+			}
+		}
+	}, [btn, audio])
 
 	return (
 		<div className='row m-0'>
@@ -105,17 +93,24 @@ const Room = () => {
 				<div
 					style={{ height: '10%', width: '96%', marginLeft: '2%' }}
 					className='border-top border-3 border-primary pt-2'>
-					<button className='btn btn-primary rounded mx-2' onClick={video ? StopVideoFunc : VideoFunc}>
+					<button
+						className='btn btn-primary rounded mx-2'
+						onClick={() => {
+							setBtn(!video ? 'video' : 'none')
+							setVideo(!video)
+						}}>
 						{video ? 'Stop' : 'Start'} Video
 					</button>
-					<button className='btn btn-primary rounded mx-2' onClick={AudioFunc}>
+					<button className='btn btn-primary rounded mx-2' onClick={() => setAudio(!audio)}>
 						{audio ? 'Stop' : 'Start'} Audio
 					</button>
 					<button
 						className='btn btn-success rounded mx-2 position-relative'
 						style={{ position: 'relative', left: '25%' }}
-						disabled={video}
-						onClick={share ? StopShareFunc : ShareFunc}>
+						onClick={() => {
+							setBtn(!share ? 'share' : 'none')
+							setShare(!share)
+						}}>
 						{share ? 'Stop' : 'Start'} Share
 					</button>
 					<button className='btn btn-danger rounded mx-2' style={{ float: 'right' }}>
