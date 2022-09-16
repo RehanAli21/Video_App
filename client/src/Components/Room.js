@@ -15,23 +15,49 @@ const Room = () => {
 	const myVideo = useRef()
 
 	const VideoFunc = () => {
-		if (video) setShare(false)
-		setVideo(!video)
+		if (!share && navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices
+				.getUserMedia({ video: true, audio: audio })
+				.then(stream => {
+					setStream(stream)
+					myVideo.current.srcObject = stream
+					setVideo(true)
+				})
+				.catch(error => console.log('Something went wrong!'))
+		}
 	}
 
-	const AudioFunc = () => setAudio(!audio)
+	const StopVideoFunc = () => {
+		if (myVideo.current.srcObject) {
+			let tracks = stream.getTracks()
+
+			for (const track in tracks) {
+				tracks[track].stop()
+			}
+
+			myVideo.src = ''
+			myVideo.srcObject = null
+			setVideo(false)
+		}
+	}
+
+	const AudioFunc = () => {
+		if (video) {
+		} else if (share) {
+		}
+		setAudio(!audio)
+	}
 
 	const ShareFunc = () => {
-		if (!share && navigator.mediaDevices.getDisplayMedia) {
+		if (!video && navigator.mediaDevices.getDisplayMedia) {
 			navigator.mediaDevices
 				.getDisplayMedia({ video: true, audio: audio })
 				.then(stream => {
 					setStream(stream)
 					myVideo.current.srcObject = stream
+					setShare(true)
 				})
 				.catch(error => console.log('Something went wrong!'))
-
-			setShare(true)
 		}
 	}
 
@@ -45,8 +71,8 @@ const Room = () => {
 
 			myVideo.src = ''
 			myVideo.srcObject = null
+			setShare(false)
 		}
-		setShare(false)
 	}
 
 	const showMembers = () => {
@@ -79,7 +105,7 @@ const Room = () => {
 				<div
 					style={{ height: '10%', width: '96%', marginLeft: '2%' }}
 					className='border-top border-3 border-primary pt-2'>
-					<button className='btn btn-primary rounded mx-2' onClick={VideoFunc}>
+					<button className='btn btn-primary rounded mx-2' onClick={video ? StopVideoFunc : VideoFunc}>
 						{video ? 'Stop' : 'Start'} Video
 					</button>
 					<button className='btn btn-primary rounded mx-2' onClick={AudioFunc}>
