@@ -16,4 +16,15 @@ const getAllIdsInRoom = room => {
 	}
 }
 
-module.exports = { addIdInRoom, getAllIdsInRoom }
+const getRoomById = id => {
+	let r = null
+	for (const room in rooms) {
+		for (let i = 0; i < rooms[room].length; i++) {
+			if (rooms[room][i].id === id) r = room
+		}
+	}
+
+	return r
+}
+
+module.exports = { addIdInRoom, getAllIdsInRoom, getRoomById }

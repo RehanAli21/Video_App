@@ -7,7 +7,7 @@ const Main = () => {
 	const navigate = useNavigate()
 	const ENDPOINT = 'http://localhost:5000'
 
-	const { myId, createRoomFunc, joinRoomFunc } = useContext(SocketContext)
+	const { myId } = useContext(SocketContext)
 
 	const [createName, setCreateName] = useState('')
 	const [createRoom, setCreateRoom] = useState('')
@@ -20,7 +20,6 @@ const Main = () => {
 				.get(`${ENDPOINT}/api/createRoom/${createRoom}`)
 				.then(res => {
 					if (res.data.msg === 'roomAvailable') {
-						createRoomFunc(createRoom, myId, createName)
 						navigate(`/room/create/${createRoom}/${createName}`)
 					} else if (res.data.msg === 'roomExist') {
 						alert('Room Already Exists')
@@ -32,7 +31,6 @@ const Main = () => {
 				.get(`${ENDPOINT}/api/joinRoom/${joinRoom}`)
 				.then(res => {
 					if (res.data.msg === 'roomAvailable') {
-						joinRoomFunc(joinRoom, myId, joinName)
 						navigate(`/room/join/${joinRoom}/${joinName}`)
 					} else if (res.data.msg === 'roomDoesNotExist') {
 						alert('Room Does Not Exists')

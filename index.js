@@ -2,7 +2,7 @@ const express = require('express')
 const http = require('http')
 const cors = require('cors')
 const socketio = require('socket.io')
-const { addIdInRoom, getAllIdsInRoom } = require('./RoomData')
+const { addIdInRoom, getAllIdsInRoom, getRoomById } = require('./RoomData')
 require('dotenv').config()
 
 const app = express()
@@ -39,27 +39,7 @@ app.get('/api/joinRoom/:room', (req, res) => {
 
 // run when client connects
 io.on('connection', socket => {
-	socket.on('createRoom', ({ room, id, name }) => {
-		addIdInRoom(room, { id, name })
-
-		socket.join(room)
-	})
-
-	socket.on('joinRoom', async ({ room, id, name }) => {
-		addIdInRoom(room, { id, name })
-
-		socket.join(room)
-
-		let r = await getAllIdsInRoom(room)
-
-		io.to(room).emit('user join', r)
-	})
-
-	socket.emit('me', socket.id)
-
-	socket.on('disconnect', () => {
-		socket.leave(socket.id)
-	})
+	socket.on('disconnect', () => {})
 })
 
 ////////////////////////////////////////
